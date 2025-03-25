@@ -29,7 +29,7 @@ app.get("/jobs", (req, res) => {
 });
 
 // 2. Get a single job by ID
-app.get("jobs/:id", (req, res) => {
+app.get("/jobs/:id", (req, res) => {
     const { id } = req.params;
     db.get("SELECT * FROM jobs WHERE id = ?", [id], (err, row) => {
         // If Any Error
@@ -49,17 +49,72 @@ app.post("/jobs", (req, res) => {
     const { title, type, location, description, salary, company_name, company_description, contact_email, contact_phone } = req.body;
 
     if (!title || !type || !location || !description || !salary || !company_name || !company_description || !contact_email || !contact_phone) {
-        return res.status(400).json({ error: "All fileds are required" });
+        return res.status(400).json({ error: "All fields are required" });
     }
 
-    db.run("INSERT INTO jobs (title, type, location, description, salary, company_name, company_description, contact_email, contact_phone VALUES (?,?,?,?,?,?,?,?,? "), [title, type, location, description, salary, company_name, company_description, contact_email, contact_phone],
+    db.run("INSERT INTO jobs (title, type, location, description, salary, company_name, company_description, contact_email, contact_phone) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?) ", [title, type, location, description, salary, company_name, company_description, contact_email, contact_phone], function (err) {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        res.json({
+            id: this.lastID,
+            title, type, location, description, salary, company_name, company_description, contact_email, contact_phone
+        });
+    });
+});
 
+
+// Update job by ID
+app.put("/jobs/:id", (req, res) => {
+    const { id } = req.params;
+    const { title, type, location, description, salary, company_name, company_description, contact_email, contact_phone } = req.body;
+
+    if (!title || !type || !location || !description || !salary || !company_name || !company_description || !contact_email || !contact_phone) {
+        return res.status(400).json({ error: "All fields are required" });
+    }
+
+    db.run(
+        `UPDATE jobs 
+         SET title = ?, 
+             type = ?, 
+             location = ?, 
+             description = ?, 
+             salary = ?, 
+             company_name = ?, 
+             company_description = ?, 
+             contact_email = ?, 
+             contact_phone = ? 
+         WHERE id = ?`,
+        [title, type, location, description, salary, company_name, company_description, contact_email, contact_phone, id],
         function (err) {
             if (err) {
                 return res.status(500).json({ error: err.message });
             }
-            res.json({ id: this.lastID, title, type, location, description, salary, company_name, company_description, contact_email, contact_phone });
+            if (this.changes === 0) {
+                return res.status(404).json({ error: "Job Not Found" });
+            }
+            console.log(this.changes);
+
+            res.json({ message: "Job Updated Successfully" });
         }
+    );
+});
+
+
+// Delete Job by ID
+app.delete("/jobs/:id", (req, res) => {
+    const { id } = req.params;
+
+    db.run("DELETE FROM jobs WHERE id = ?", [id], (err) => {
+        if (err) {
+            return res.status(500).json({ error: err.message });
+        }
+        if (this.changes === 0) {
+            return res.status(404).json({ error: "Job Not Found" });
+        }
+
+        res.json({ message: "Job Deleted Successfully" });
+    })
 })
 
 // Start the server

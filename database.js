@@ -10,22 +10,22 @@ const db = new sqlite3.Database('./jobs.db', sqlite3.OPEN_READWRITE | sqlite3.OP
 });
 
 // Create jobs table
-// db.run(`
-//     CREATE TABLE IF NOT EXISTS jobs (
-//     id INTEGER PRIMARY KEY AUTOINCREMENT,
-//     title TEXT NOT NULL,
-//     type TEXT NOT NULL,
-//     location TEXT NOT NULL,
-//     description TEXT NOT NULL,
-//     salary TEXT NOT NULL,
-//     company_name TEXT NOT NULL,
-//     company_description TEXT NOT NULL,
-//     contact_email TEXT NOT NULL,
-//     contact_phone TEXT NOT NULL
-// )`);
+db.run(`
+    CREATE TABLE IF NOT EXISTS jobs (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    type TEXT NOT NULL,
+    location TEXT NOT NULL,
+    description TEXT NOT NULL,
+    salary TEXT NOT NULL,
+    company_name TEXT NOT NULL,
+    company_description TEXT NOT NULL,
+    contact_email TEXT NOT NULL,
+    contact_phone TEXT NOT NULL
+)`);
 
 // Insert Data into jobs
-db.run(`INSERT INTO jobs (title, type, location, description, salary, company_name, company_description, contact_email, contact_phone) 
+db.run(`INSERT INTO jobs (title, type, location, description, salary, company_name, company_description, contact_email, contact_phone)
 VALUES 
 ('Junior Vue Dev', 'Full-Time', 'Boston, MA', 
  'We are seeking a talented Front-End Developer to join our team in Boston, MA. The ideal candidate will have strong skills in HTML, CSS, and JavaScript, with experience working with modern JavaScript frameworks such as Vue or Angular.', 
